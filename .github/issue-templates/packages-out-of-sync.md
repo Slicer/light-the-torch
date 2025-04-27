@@ -1,6 +1,6 @@
 ---
 title: light-the-torch is out of sync with the PyTorch package indices
-assignees: pmeier
+assignees: jamesobutler
 ---
 {%- if env.MISSING|length %}
 The following packages are available, but not patched:

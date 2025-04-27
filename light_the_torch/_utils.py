@@ -29,7 +29,7 @@ class UnexpectedInternalError(Exception):
             f"are out of sync.\n"
             f"If that is the case, please reinstall light-the-torch. "
             f"Otherwise, please submit a bug report at "
-            f"https://github.com/pmeier/light-the-torch/issues"
+            f"https://github.com/Slicer/light-the-torch/issues"
         )
 
 

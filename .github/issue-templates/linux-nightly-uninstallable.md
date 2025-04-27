@@ -1,6 +1,6 @@
 ---
 title: Linux nightly binaries cannot be installed exclusively from the PyTorch wheel indices
-assignees: pmeier
+assignees: jamesobutler
 ---
 
 See https://github.com/{{ env.REPO }}/actions/runs/{{ env.ID }} for details.

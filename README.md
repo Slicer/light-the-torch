@@ -1,8 +1,8 @@
 # `light-the-torch`
 
-[![BSD-3-Clause License](https://img.shields.io/github/license/pmeier/light-the-torch)](https://opensource.org/licenses/BSD-3-Clause)
+[![BSD-3-Clause License](https://img.shields.io/github/license/Slicer/light-the-torch)](https://opensource.org/licenses/BSD-3-Clause)
 [![Project Status: WIP](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![Code coverage via codecov.io](https://codecov.io/gh/pmeier/light-the-torch/branch/main/graph/badge.svg)](https://codecov.io/gh/pmeier/light-the-torch)
+[![Code coverage via codecov.io](https://codecov.io/gh/Slicer/light-the-torch/branch/main/graph/badge.svg)](https://codecov.io/gh/Slicer/light-the-torch)
 
 `light-the-torch` is a small utility that wraps `pip` to ease the installation process
 for PyTorch distributions like `torch`, `torchvision`, `torchaudio`, and so on as well
@@ -169,7 +169,7 @@ them.
 Thanks a lot for your interest to contribute to `light-the-torch`! All contributions are
 appreciated, be it code or not. Especially in a project like this, we rely on user
 reports for edge cases we didn't anticipate. Please feel free to
-[open an issue](https://github.com/pmeier/light-the-torch/issues) if you encounter
+[open an issue](https://github.com/Slicer/light-the-torch/issues) if you encounter
 anything that you think should be working but doesn't.
 
 If you want to contribute code, check out our [contributing guidelines](CONTRIBUTING.md)

@@ -3,13 +3,13 @@
 Thanks a lot for your interest to contribute to `light-the-torch`! All contributions are
 appreciated, be it code or not. Especially in a project like this, we rely on user
 reports for edge cases we didn't anticipate. Please feel free to
-[open an issue](<(https://github.com/pmeier/light-the-torch/issues)>) if you encounter
+[open an issue](<(https://github.com/Slicer/light-the-torch/issues)>) if you encounter
 anything that you think should be working but doesn't.
 
 If you are planning to contribute bug-fixes or documentation improvements, please go
-ahead and open a [pull request (PR)](https://github.com/pmeier/light-the-torch/pulls).
+ahead and open a [pull request (PR)](https://github.com/Slicer/light-the-torch/pulls).
 If you are planning to contribute new features, please open an
-[issue](https://github.com/pmeier/light-the-torch/issues) and discuss the feature with
+[issue](https://github.com/Slicer/light-the-torch/issues) and discuss the feature with
 us first.
 
 ## Workflow
@@ -18,7 +18,7 @@ To start working on `light-the-torch` clone the repository from GitHub and set u
 development environment
 
 ```shell
-git clone https://github.com/pmeier/light-the-torch
+git clone https://github.com/Slicer/light-the-torch
 cd light-the-torch
 virtualenv .venv --prompt='(light-the-torch-dev) '
 source .venv/bin/activate

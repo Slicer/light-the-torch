@@ -17,7 +17,10 @@ keywords = [
   "install",
 ]
 authors = [
-    { name = "Philip Meier", email = "github.pmeier@posteo.de" },
+    { name = "Philip Meier" },
+]
+maintainers = [
+    { name = "Slicer Community"},
 ]
 license = {text = "BSD-3-Clause"}
 classifiers = [
@@ -40,8 +43,8 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Tracker = "https://github.com/pmeier/light-the-torch/issues"
-Source = "https://github.com/pmeier/light-the-torch"
+Tracker = "https://github.com/Slicer/light-the-torch/issues"
+Source = "https://github.com/Slicer/light-the-torch"
 
 [project.scripts]
 ltt = "light_the_torch._cli:main"
