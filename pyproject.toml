@@ -29,16 +29,17 @@ classifiers = [
     "Environment :: GPU :: NVIDIA CUDA",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: BSD License",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: System :: Installation/Setup",
     "Topic :: Utilities",
 ]
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 dependencies = [
-    "pip >=22.3, <24.4",
+  "pip >=22.3, <26.1",
+  "packaging >=23.0",
 ]
 dynamic = ["version"]
 
@@ -67,7 +68,7 @@ local_scheme = "node-and-timestamp"
 # https://github.com/psf/black#configuration-format
 
 line-length = 88
-target-version = ['py39']
+target-version = ['py310']
 exclude = '''
 /(
     \.git

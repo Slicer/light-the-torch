@@ -8,7 +8,7 @@ import itertools
 
 from unittest import mock
 
-from pip._vendor.packaging.requirements import Requirement
+from packaging.requirements import Requirement
 
 
 class UnexpectedInternalError(Exception):

@@ -3,7 +3,7 @@ description: "Setup development environment"
 
 inputs:
   python-version:
-    default: "3.9"
+    default: "3.10"
 
 runs:
   using: composite

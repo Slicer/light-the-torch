@@ -151,6 +151,10 @@ _MINIMUM_DRIVER_VERSIONS = {
     "Linux": {
         # Table 2 from
         # https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html
+        Version("13.1"): Version("580.65.06"),
+        Version("13.0"): Version("580.65.06"),
+        Version("12.9"): Version("525.60.13"),
+        Version("12.8"): Version("525.60.13"),
         Version("12.6"): Version("525.60.13"),
         Version("12.5"): Version("525.60.13"),
         Version("12.4"): Version("525.60.13"),
@@ -182,6 +186,10 @@ _MINIMUM_DRIVER_VERSIONS = {
     "Windows": {
         # Table 2 from
         # https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html
+        Version("13.1"): Version("580.0.0"),
+        Version("13.0"): Version("580.0.0"),
+        Version("12.9"): Version("528.33"),
+        Version("12.8"): Version("528.33"),
         Version("12.6"): Version("528.33"),
         Version("12.5"): Version("528.33"),
         Version("12.4"): Version("528.33"),
