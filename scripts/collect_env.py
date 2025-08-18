@@ -4,7 +4,7 @@ import itertools
 import platform
 import subprocess
 
-import importlib_metadata
+from importlib import metadata as importlib_metadata
 import pip
 from pip._vendor.packaging.requirements import Requirement
 from pip._vendor.packaging.version import InvalidVersion, Version
