@@ -5,7 +5,7 @@ import requests
 import tqdm
 from bs4 import BeautifulSoup
 
-from light_the_torch._cb import _MINIMUM_DRIVER_VERSIONS, CPUBackend, CUDABackend
+from light_the_torch._cb import _MINIMUM_DRIVER_VERSIONS, CPUBackend, VulkanBackend, CUDABackend
 from light_the_torch._patch import (
     Channel,
     get_index_urls,
@@ -37,6 +37,7 @@ COMPUTATION_BACKENDS = {
     for minimum_driver_versions in _MINIMUM_DRIVER_VERSIONS.values()
     for cuda_version, minimum_driver_version in minimum_driver_versions.items()
 }
+COMPUTATION_BACKENDS.add(VulkanBackend())
 COMPUTATION_BACKENDS.add(CPUBackend())
 
 INDEX_URLS = sorted(
