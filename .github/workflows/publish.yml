@@ -8,6 +8,8 @@ on:
 jobs:
   pypi:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
 
     steps:
       - name: Checkout repository
@@ -18,9 +20,8 @@ jobs:
       - name: Setup development environment
         uses: ./.github/actions/setup-dev-env
 
+      - name: Build and verify
+        run: doit lint test publishable
+
       - name: Publish to PyPI
-        env:
-          TWINE_REPOSITORY: pypi
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: doit publish
+        uses: pypa/gh-action-pypi-publish@release/v1
