@@ -93,6 +93,17 @@ class TestComputationBackend:
     def test_from_str_unknown(self, string):
         with pytest.raises(ValueError, match=string):
             cb.ComputationBackend.from_str(string)
+    def test_from_str_vulkan(self, major, minor, patch, string):
+        backend = cb.ComputationBackend.from_str(string)
+        assert isinstance(backend, cb.VulkanBackend)
+        assert backend.major == major
+        assert backend.minor == minor
+        assert backend.patch == patch
+
+    @pytest.mark.parametrize("string", (("unknown", "vulkan")))
+    def test_from_str_unknown(self, string):
+        with pytest.raises(ValueError, match=string):
+            cb.ComputationBackend.from_str(string)
 
 
 class TestCPUBackend:
@@ -119,10 +130,22 @@ class TestROCmBackend:
             backend == f"rocm{major}.{minor}{f'.{patch}' if patch is not None else ''}"
         )
 
+class TestVulkanBackend:
+    @pytest.mark.parametrize("patch", [10, None])
+    def test_eq_with_patch(self, patch):
+        major = 42
+        minor = 21
+        backend = cb.VulkanBackend(major, minor, patch)
+        assert (
+            backend == f"vulkan{major}.{minor}{f'.{patch}' if patch is not None else ''}"
+        )
+
 
 class TestOrdering:
     def test_cpu(self):
         assert cb.CPUBackend() < cb.CUDABackend(0, 0)
+        assert cb.VulkanBackend() < cb.CUDABackend(0, 0)
+        assert cb.CPUBackend() < cb.VulkanBackend(0, 0)
 
     def test_cuda(self):
         assert cb.CUDABackend(0, 0) > cb.CPUBackend()
@@ -131,6 +154,7 @@ class TestOrdering:
 
     def test_rocm(self):
         assert cb.ROCmBackend(0, 0, 0) > cb.CPUBackend()
+        assert cb.ROCmBackend(0, 0, 0) > cb.VulkanBackend()
 
         assert cb.ROCmBackend(1, 2, 3) < cb.ROCmBackend(3, 2, 1)
         assert cb.ROCmBackend(3, 2, 1) < cb.ROCmBackend(10, 9, 8)

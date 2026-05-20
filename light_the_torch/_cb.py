@@ -50,6 +50,23 @@ class ComputationBackend(ABC):
                 minor = version[-1]
 
             return CUDABackend(int(major), int(minor))
+        elif string.startswith("vulkan") or string.startswith("vk"):
+            # Accept: "vulkan", "vulkan1.2", "vk1.2", "vk1"
+            match = re.match(r"^(?:vulkan|vk)(?P<version>[\d.]+)?$", string)
+            if match is None:
+                raise parse_error
+
+            version = match.group("version")
+            if not version:
+                return VulkanBackend()
+            if "." in version:
+                parts = version.split(".")
+                major = int(parts[0])
+                minor = int(parts[1]) if len(parts) > 1 else 0
+            else:
+                major = int(version)
+                minor = 0
+            return VulkanBackend(major, minor)
         elif string.startswith("rocm"):
             match = re.match(r"^rocm(?P<version>[\d.]+)$", string)
             if match is None:
@@ -128,6 +145,35 @@ class ROCmBackend(ComputationBackend):
             return True
         else:
             return self.patch < other.patch
+
+
+class VulkanBackend(ComputationBackend):
+    def __init__(self, major: Optional[int] = None, minor: Optional[int] = None) -> None:
+        # major/minor can be None when unspecified
+        self.major = major
+        self.minor = minor
+
+    @property
+    def local_specifier(self) -> str:
+        if self.major is None:
+            return "vulkan"
+        if self.minor is None:
+            return f"vulkan{self.major}"
+        return f"vulkan{self.major}.{self.minor}"
+
+    def __lt__(self, other: Any) -> bool:
+        # Vulkan is a GPU backend; we treat it as greater than CPU but refuse to order with CUDA/ROCm
+        if isinstance(other, CPUBackend):
+            return False
+        elif isinstance(other, (CUDABackend, ROCmBackend)):
+            raise TypeError("Refusing to order a Vulkan and a CUDA/ROCm computation backend.")
+        elif not isinstance(other, VulkanBackend):
+            return NotImplemented
+
+        # Compare versions when both have them defined. Missing parts are considered smaller.
+        self_version = (self.major if self.major is not None else 0, self.minor if self.minor is not None else 0)
+        other_version = (other.major if other.major is not None else 0, other.minor if other.minor is not None else 0)
+        return self_version < other_version
 
 
 def _detect_nvidia_driver_version() -> Optional[Version]:
@@ -237,5 +283,33 @@ def _detect_compatible_cuda_backends() -> List[CUDABackend]:
     ]
 
 
+def _detect_vulkan_backends() -> List[VulkanBackend]:
+    """
+    Detect Vulkan runtime using `vulkaninfo` if available and parse an instance version.
+    Returns a list with a single VulkanBackend (with parsed major/minor if found) or empty list.
+    """
+    try:
+        result = subprocess.run(
+            ["vulkaninfo"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        # Look for lines such as:
+        # "Vulkan Instance Version: 1.2.162" or "Vulkan Instance Version: 1.3.204"
+        for line in result.stdout.splitlines():
+            m = re.search(r"Vulkan Instance Version:\s*(?P<version>[\d.]+)", line)
+            if m:
+                ver = m.group("version")
+                parts = ver.split(".")
+                major = int(parts[0])
+                minor = int(parts[1]) if len(parts) > 1 else 0
+                return [VulkanBackend(major, minor)]
+        # If vulkaninfo ran but we couldn't parse a version, still assume Vulkan exists.
+        return [VulkanBackend()]
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return []
+
+
 def detect_compatible_computation_backends() -> Set[ComputationBackend]:
-    return {*_detect_compatible_cuda_backends(), CPUBackend()}
+    return {*_detect_compatible_cuda_backends(), *_detect_vulkan_backends(), CPUBackend()}
