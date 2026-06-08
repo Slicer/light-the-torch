@@ -58,7 +58,7 @@ jobs:
         run: doit test
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           flags: unit
           env_vars: OS,PYTHON_VERSION
