@@ -2,6 +2,7 @@ import contextlib
 import dataclasses
 import enum
 import functools
+import inspect
 import itertools
 import optparse
 import os
@@ -16,11 +17,17 @@ from pip._internal.index.collector import CollectedSources
 from pip._internal.index.package_finder import CandidateEvaluator
 from pip._internal.index.sources import build_source
 from pip._internal.models.search_scope import SearchScope
+from pip._vendor.packaging.utils import canonicalize_name
 
 import light_the_torch as ltt
 
 from . import _cb as cb
 from ._utils import apply_fn_patch
+
+# pip>=24.0 requires the project name to be passed to build_source()
+BUILD_SOURCE_REQUIRES_PROJECT_NAME = (
+    "project_name" in inspect.signature(build_source).parameters
+)
 
 
 class Channel(enum.Enum):
@@ -82,6 +89,23 @@ THIRD_PARTY_PACKAGES = {
     "typing-extensions",
     "urllib3",
 }
+
+# Dependencies of ROCm builds of PyTorch, e.g. triton-rocm, rocm, rocm-sdk-core,
+# rocm-sdk-libraries, and rocm-sdk-device-gfx1201. They are only available on (or
+# linked from) the PyTorch indices. PyPI only hosts outdated versions or placeholders
+# with the same names, which cannot satisfy the requirements of PyTorch.
+ROCM_PACKAGES = {
+    "pytorch-triton-rocm",
+    "triton-rocm",
+    "rocm",
+    "rocm-profiler",
+}
+ROCM_PACKAGE_PREFIXES = ("rocm-sdk-",)
+
+
+def is_rocm_package(project_name):
+    name = canonicalize_name(project_name)
+    return name in ROCM_PACKAGES or name.startswith(ROCM_PACKAGE_PREFIXES)
 
 
 def patch(pip_main):
@@ -310,6 +334,11 @@ def patch_link_collection(computation_backends, channel, user_supplied_pinned_pa
         no_index=False,
     )
 
+    rocm_selected = any(
+        isinstance(computation_backend, cb.ROCmBackend)
+        for computation_backend in computation_backends
+    )
+
     @contextlib.contextmanager
     def context(input):
         if not (
@@ -318,6 +347,7 @@ def patch_link_collection(computation_backends, channel, user_supplied_pinned_pa
                 input.project_name in THIRD_PARTY_PACKAGES
                 and input.project_name not in user_supplied_pinned_packages
             )
+            or (rocm_selected and is_rocm_package(input.project_name))
         ):
             yield
             return
@@ -346,16 +376,21 @@ def patch_link_collection(computation_backends, channel, user_supplied_pinned_pa
 
         # In case the distribution is not present on the PyTorch indices, we fall back
         # to PyPI.
+        build_source_kwargs = dict(
+            candidates_from_page=input.candidates_from_page,
+            page_validator=input.self.session.is_secure_origin,
+            expand_dir=False,
+            cache_link_parsing=False,
+        )
+        if BUILD_SOURCE_REQUIRES_PROJECT_NAME:
+            build_source_kwargs["project_name"] = input.project_name
         _, pypi_file_source = build_source(
             SearchScope(
                 find_links=[],
                 index_urls=["https://pypi.org/simple"],
                 no_index=False,
             ).get_index_urls_locations(input.project_name)[0],
-            candidates_from_page=input.candidates_from_page,
-            page_validator=input.self.session.is_secure_origin,
-            expand_dir=False,
-            cache_link_parsing=False,
+            **build_source_kwargs,
         )
 
         return CollectedSources(find_links=[], index_urls=[pypi_file_source])
